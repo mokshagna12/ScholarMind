@@ -8,8 +8,8 @@ import re
 def create_session():
     session = requests.Session()
     retry = Retry(
-        total=3,
-        backoff_factor=1,
+        total=4,
+        backoff_factor=3,
         status_forcelist=[429, 500, 502, 503, 504]
     )
     adapter = HTTPAdapter(max_retries=retry)
