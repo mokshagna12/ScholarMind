@@ -16,9 +16,11 @@ export default function App() {
     setResults(null);
     setCurrentSearchTopic(query);
 
-    const apiEndpoint = import.meta.env.PROD 
-      ? '/api/research' 
-      : 'http://127.0.0.1:8000/api/research';
+    const apiEndpoint = import.meta.env.VITE_API_URL || (
+      import.meta.env.PROD 
+        ? '/api/research' 
+        : 'http://127.0.0.1:8000/api/research'
+    );
 
     try {
       const response = await fetch(apiEndpoint, {

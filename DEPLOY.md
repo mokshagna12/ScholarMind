@@ -60,3 +60,20 @@ Render offers a free tier for Docker web services. However, due to the 512MB RAM
      - Value: *[Your Gemini API Key]*
 7. Click **Create Web Service**. 
    Render will build the container and deploy it automatically.
+
+---
+
+## Option 3: Vercel (Frontend Static hosting) + Hugging Face/Render (Backend)
+Vercel is the premier platform for deploying React/Vite frontends. Because the backend uses a local machine learning embedding model that exceeds Vercel Serverless Function memory sizes (250MB limit), you should deploy the **frontend on Vercel** and the **backend on Hugging Face Spaces (or Render)**.
+
+### Steps to Deploy:
+1. Deploy your backend using either **Hugging Face Spaces** (Option 1 above) or **Render** (Option 2 above). Copy your deployed backend service's URL (e.g. `https://your-username-scholarmind.hf.space` or `https://scholarmind.onrender.com`).
+2. Log in to [Vercel](https://vercel.com/).
+3. Click **Add New** ➔ **Project** and import your GitHub repository.
+4. On the configuration screen, configure the following:
+   - **Framework Preset**: Vite (detected automatically).
+   - **Root Directory**: Click Edit and select the **`frontend`** directory.
+   - **Environment Variables**:
+     - Key: **`VITE_API_URL`**
+     - Value: `https://YOUR_BACKEND_URL` (without a trailing slash, e.g. `https://your-username-scholarmind.hf.space`)
+5. Click **Deploy**. Vercel will build your static React app and serve it over a global CDN. Since our FastAPI backend has CORS configured to accept all origins (`*`), the cross-origin RAG query requests will execute seamlessly.
