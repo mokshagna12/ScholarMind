@@ -20,7 +20,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://scholarmind.vercel.app"
+        "https://scholarmind-flax.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
