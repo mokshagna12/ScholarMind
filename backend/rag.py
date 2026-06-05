@@ -1,8 +1,7 @@
 import os
 import json
 from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from pydantic import BaseModel, Field
 from typing import List
 
@@ -24,26 +23,19 @@ class RAGPipeline:
     def __init__(self):
         self.api_key = os.getenv("GEMINI_API_KEY")
         if not self.api_key:
-            # We will raise a clean message, but allow initialization so that missing env var errors
-            # can be caught gracefully at request time.
             print("Warning: GEMINI_API_KEY not found in environment variables.")
-        
-        # genai.Client() automatically picks up GEMINI_API_KEY from environment.
-        # If it's missing, we pass it explicitly to make sure it's handled or we can instantiate with None.
-        try:
-            self.client = genai.Client(api_key=self.api_key) if self.api_key else None
-        except Exception as e:
-            print(f"Error initializing Gemini Client: {e}")
-            self.client = None
+        else:
+            genai.configure(api_key=self.api_key)
 
     def generate_research_synthesis(self, query: str, context: str) -> dict:
         """
         Runs RAG on the user query and the retrieved paper abstracts context,
         returning a structured dict matching ResearchResponse.
         """
-        if not self.client:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
             raise RuntimeError(
-                "Gemini Client is not initialized. Please set the GEMINI_API_KEY environment variable."
+                "GEMINI_API_KEY environment variable is not set. Please add it to your environment."
             )
 
         prompt = f"""
@@ -63,10 +55,13 @@ You must output your response in JSON matching the requested schema. Do not make
 """
 
         try:
-            response = self.client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=prompt,
-                config=types.GenerateContentConfig(
+            # Configure or re-configure API key before running the model
+            genai.configure(api_key=api_key)
+            
+            model = genai.GenerativeModel('gemini-2.5-flash')
+            response = model.generate_content(
+                prompt,
+                generation_config=genai.GenerationConfig(
                     response_mime_type="application/json",
                     response_schema=ResearchResponse,
                     temperature=0.2,
@@ -84,7 +79,7 @@ You must output your response in JSON matching the requested schema. Do not make
 if __name__ == "__main__":
     # Test script if API key is set
     pipeline = RAGPipeline()
-    if pipeline.api_key:
+    if os.getenv("GEMINI_API_KEY"):
         print("API Key found. Attempting a mock generation...")
         mock_context = (
             "Paper: Attention Is All You Need (2017)\n"

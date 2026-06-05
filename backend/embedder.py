@@ -1,13 +1,44 @@
+import os
 import chromadb
-from chromadb.utils import embedding_functions
+from chromadb import EmbeddingFunction, Documents, Embeddings
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+class GeminiEmbeddingFunction(EmbeddingFunction):
+    """
+    Custom embedding function for ChromaDB utilizing the Google Gemini API.
+    """
+    def __call__(self, input: Documents) -> Embeddings:
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY is not set in environment variables.")
+        
+        # Ensure the API is configured with the correct key
+        genai.configure(api_key=api_key)
+        
+        try:
+            # genai.embed_content accepts a list of texts and returns a list of embeddings
+            result = genai.embed_content(
+                model="models/gemini-embedding-001",
+                content=input,
+                task_type="retrieval_document"
+            )
+            return result["embedding"]
+        except Exception as e:
+            print(f"Error calling Gemini Embedding API: {e}")
+            raise RuntimeError(f"Failed to generate embeddings from Gemini API: {str(e)}")
 
 class PaperEmbedder:
     def __init__(self):
-        # Initialize sentence-transformers embedding function using all-MiniLM-L6-v2
-        # This will download the model locally upon the first request (cached)
-        self.embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="all-MiniLM-L6-v2"
-        )
+        # Configure Gemini API key on initialization if available
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            genai.configure(api_key=api_key)
+            
+        self.embedding_function = GeminiEmbeddingFunction()
         # Use an ephemeral client for clean in-memory indexing of fetched papers per query
         self.client = chromadb.EphemeralClient()
 
@@ -15,7 +46,6 @@ class PaperEmbedder:
         """
         Chunks and embeds paper abstracts, storing them in a fresh ChromaDB collection.
         """
-        # Delete collection if it exists to ensure a fresh index for the current topic
         try:
             self.client.delete_collection(collection_name)
         except Exception:
@@ -43,7 +73,6 @@ class PaperEmbedder:
                     "year": paper["year"],
                     "chunk_index": i
                 })
-                # IDs must be unique strings
                 ids.append(f"{paper['id']}_chunk_{i}")
 
         if documents:
@@ -68,9 +97,7 @@ class PaperEmbedder:
             end = start + chunk_size
             chunk = " ".join(words[start:end])
             chunks.append(chunk)
-            # Advance start by chunk_size - overlap to maintain history context
             start += (chunk_size - overlap)
-            # Break if we've consumed the text and the next chunk would be empty
             if start >= len(words):
                 break
         return chunks

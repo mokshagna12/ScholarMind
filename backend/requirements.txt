@@ -1,8 +1,7 @@
 fastapi
 uvicorn
-requests
-sentence-transformers
 chromadb
-google-genai
+google-generativeai
+requests
 python-dotenv
 pydantic
