@@ -1,22 +1,28 @@
-# Python
-backend/venv/
-backend/__pycache__/
-backend/**/*.pyc
-backend/.env
+# Secrets & Configuration
+.env
+.env.*
+!.env.example
 
-# Node/React
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
+# Dependency Directories
+node_modules/
+venv/
+env/
 
-# Local Storage/Caching
-backend/chroma_db/
+# Python Cache & Compilation
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Vector Storage & Caches
+.chroma/
+chroma_db/
 .cache/
 .huggingface/
+
+# Build Directories
+dist/
+build/
 
 # System Files
 .DS_Store
