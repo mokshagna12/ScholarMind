@@ -1,10 +1,12 @@
 # ScholarMind — AI-powered Student Research Assistant
 
-ScholarMind is a full-stack academic assistant designed for students to research topics efficiently. By feeding search terms into the arXiv API, indexing abstracts locally using high-performance vector embeddings, and conducting Retrieval-Augmented Generation (RAG) using Google Gemini 2.5 Flash, it synthesizes summaries, exposes critical knowledge gaps, and proposes follow-up paths.
+🚀 **Live Demo**: [https://scholarmind-app.vercel.app](https://scholarmind-app.vercel.app)
+
+ScholarMind is a full-stack academic assistant designed for students to research topics efficiently. By feeding search terms into the arXiv API, indexing abstracts dynamically using Gemini vector embeddings, and conducting Retrieval-Augmented Generation (RAG) using Google Gemini 2.5 Flash, it synthesizes summaries, exposes critical knowledge gaps, and proposes follow-up paths.
 
 ## Key Features
 - **Semantic RAG Search**: Queries the free arXiv API, chunks papers, and indexes abstracts dynamically into ChromaDB.
-- **Local Embeddings**: Runs `sentence-transformers` (`all-MiniLM-L6-v2`) locally to compute embeddings without incurring OpenAI costs.
+- **Gemini Embeddings**: Integrates the Google Gemini Embedding API (`models/gemini-embedding-001`) to compute vector representations in the cloud. This bypasses the local loading of heavy PyTorch model weights, minimizing memory usage to comfortably fit on free 512MB hosting plans.
 - **Academic Synthesis**: Leverages `gemini-2.5-flash` with Structured Outputs to guarantee structured JSON metadata containing:
   - An academic yet accessible summary answering the topic.
   - Exactly **3 key knowledge gaps** identified in the literature.
