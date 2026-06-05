@@ -15,10 +15,21 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS for React frontend (defaulting to http://localhost:5173 for Vite)
+# Configure CORS origins dynamically (allows setting Vercel domain via ALLOWED_ORIGINS env var)
+allowed_origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+env_origins = os.getenv("ALLOWED_ORIGINS")
+if env_origins:
+    allowed_origins.extend([origin.strip() for origin in env_origins.split(",")])
+else:
+    # Wildcard fallback for local development if not configured
+    allowed_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # For local dev we can allow all, or restrict to specific localhost ports
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
