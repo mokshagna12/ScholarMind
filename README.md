@@ -1,6 +1,6 @@
 # ScholarMind — AI-powered Student Research Assistant
 
-🚀 **Live Demo**: [https://scholarmind-app.vercel.app](https://scholarmind-app.vercel.app)
+🚀 **Live Demo**: (https://scholarmind-flax.vercel.app/)
 
 ScholarMind is a full-stack academic assistant designed for students to research topics efficiently. By feeding search terms into the arXiv API, indexing abstracts dynamically using Gemini vector embeddings, and conducting Retrieval-Augmented Generation (RAG) using Google Gemini 2.5 Flash, it synthesizes summaries, exposes critical knowledge gaps, and proposes follow-up paths.
 
