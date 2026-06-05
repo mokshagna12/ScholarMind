@@ -16,8 +16,12 @@ export default function App() {
     setResults(null);
     setCurrentSearchTopic(query);
 
+    const apiEndpoint = import.meta.env.PROD 
+      ? '/api/research' 
+      : 'http://127.0.0.1:8000/api/research';
+
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/research', {
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

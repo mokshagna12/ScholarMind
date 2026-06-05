@@ -145,5 +145,11 @@ async def perform_research(request: ResearchRequest):
 
     return response_data
 
+# Serve static files if they exist (used for unified Docker/HuggingFace/Render deployment)
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
